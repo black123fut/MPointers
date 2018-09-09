@@ -6,11 +6,12 @@
 using namespace std;
 
 class MPointerGC;
+
 template <class T>
 class MPointer{
 public:
     MPointer();
-    MPointer<T> static New();
+    MPointer static New();
     T &(operator *());
     T operator &();
     void operator =(MPointer<T>);
@@ -20,5 +21,6 @@ private:
     T *data;
     MPointerGC *pointerGC;
 };
+
 
 #endif //MPOINTERS_MPOINTER_H

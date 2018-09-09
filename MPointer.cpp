@@ -1,8 +1,9 @@
 #include "MPointer.h"
 #include "MPointerGC.h"
 
-#include <iostream>
 #include "LinkedList.cpp"
+#include <iostream>
+
 
 using namespace std;
 
@@ -38,8 +39,10 @@ void MPointer<T>::operator =(MPointer<T> pointer) {
 
 template<class T>
 void MPointer<T>::operator =(T pointer) {
-    data = pointer;
+    data = &pointer;
 }
+
+template class MPointer<int>;
 
 /*
  *     MPOINTERGC

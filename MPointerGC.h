@@ -2,7 +2,6 @@
 #define MPOINTERS_MPOINTERGC_H
 
 #include <iostream>
-
 using namespace std;
 
 template <class T>
