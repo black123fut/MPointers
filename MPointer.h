@@ -2,24 +2,28 @@
 #define MPOINTERS_MPOINTER_H
 
 #include <iostream>
+#include "MPointerGC.h"
 
 using namespace std;
 
-class MPointerGC;
 
 template <class T>
 class MPointer{
 public:
     MPointer();
-    MPointer static New();
+    MPointer<T> static New();
+    void setID(int);
+    int getID();
     T &(operator *());
     T operator &();
     void operator =(MPointer<T>);
     void operator =(T);
+    ~MPointer();
 
 private:
     T *data;
-    MPointerGC *pointerGC;
+    MPointerGC static *pointerGC;
+    int id;
 };
 
 

@@ -11,11 +11,13 @@ class MPointer;
 class MPointerGC {
 public:
 
-    void addPointer(MPointer<int>);
+    void addPointer(MPointer<int> *);
+    void removePointer(int id);
     static MPointerGC *Singleton();
 private:
     static MPointerGC *pointerGC;
-    LinkedList< MPointer<int> > *pointerList;
+    int IDs = 0;
+    LinkedList< MPointer<int> * > *pointerList = nullptr;
     MPointerGC(){}
 };
 
