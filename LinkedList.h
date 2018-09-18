@@ -17,7 +17,7 @@ public:
     LinkedList();
     void add(T data);
     void remove(int index);
-    T get(index)
+    T get(int index);
 
 };
 

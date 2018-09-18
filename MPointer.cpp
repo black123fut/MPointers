@@ -40,12 +40,12 @@ int MPointer<T>::getID() {
 }
 
 template <typename T>
-void MPointer<T>::set_dato(T dato) {
+void MPointer<T>::set_dato(T dato) { //Metodo agregado por Gabriel
     Dato=dato;
 }
 
 template <typename T>
-int MPointer<T>::get_dato() {
+int MPointer<T>::get_dato() { //Metodo agregado por Gabriel
     return Dato;
 }
 
