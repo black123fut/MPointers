@@ -39,6 +39,17 @@ int MPointer<T>::getID() {
     return id;
 }
 
+template <typename T>
+void MPointer<T>::set_dato(T dato) {
+    Dato=dato;
+}
+
+template <typename T>
+int MPointer<T>::get_dato() {
+    return Dato;
+}
+
+
 template<class T>
 T &(MPointer<T>::operator *()){
     return *data;
