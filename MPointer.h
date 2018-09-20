@@ -13,15 +13,19 @@ public:
     MPointer();
     MPointer<T> static New();
     void setID(int);
-    int getID();
+
     //Metodos agregados por Gabriel (set_dato y get_dato)
     void set_dato(T dato);
     int get_dato();
     //
+    int getID() const;
+    T * getData() const;
+    void setData(T *);
+
     T &(operator *());
     T operator &();
-    void operator =(MPointer<T>);
-    void operator =(T);
+    MPointer<T> & operator =(const MPointer<T> &);
+    MPointer<T> & operator =(T);
     ~MPointer();
 
 private:

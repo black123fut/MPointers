@@ -1,11 +1,15 @@
 #include "MPointer.h"
 #include "MPointerGC.h"
 #include "Mapa_Memoria.h"
+#include "Sort.cpp"
+
 #include <iostream>
 #include "Mapa_Memoria.cpp"
 
 using namespace std;
 
+
+class DoubleLinkedList;
 int main() {
 
     int contador_direcciones=0;
@@ -14,7 +18,47 @@ int main() {
 
     MPointer<int> pointer1 = MPointer<int>::New();
     MPointer<int> pointer2 = MPointer<int>::New();
+    MPointer<int> pointer3 = MPointer<int>::New();
+    MPointer<int> pointer4 = MPointer<int>::New();
+    MPointer<int> pointer5 = MPointer<int>::New();
+    MPointer<int> pointer6 = MPointer<int>::New();
+    MPointer<int> pointer7 = MPointer<int>::New();
+    MPointer<int> pointer8 = MPointer<int>::New();
+
     pointer1 = 7;
+    pointer2 = 5;
+    pointer3 = 1;
+    pointer4 = 11;
+    pointer5 = 17;
+    pointer6 = 4;
+    pointer7 = 25;
+    pointer8 = 22;
+
+
+    DoubleLinkedList *list = new DoubleLinkedList;
+    list->add(pointer1);
+    list->add(pointer2);
+    list->add(pointer3);
+    list->add(pointer4);
+    list->add(pointer5);
+    list->add(pointer6);
+    list->add(pointer7);
+    list->add(pointer8);
+
+    for (int j = 0; j < list->length(); ++j) {
+        cout << &list->get(j) << ", ";
+    }
+
+    cout << endl;
+
+    Sort *sort = new Sort;
+    sort->insertionSort(list, list->length());
+    cout << endl;
+
+    for (int i = 0; i < list->length(); ++i) {
+        cout << &list->get(i) << ", ";
+    }
+    cout << endl;
 
     //pointer1.set_dato(47);
     //cout<<pointer1.get_dato()<<endl;
@@ -67,6 +111,5 @@ int main() {
 
 
    // cout << &n.buscar(1) << endl;
-
     return 0;
 }

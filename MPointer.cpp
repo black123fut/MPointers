@@ -1,9 +1,9 @@
 #include "MPointer.h"
 #include "MPointerGC.h"
 
-#include "LinkedList.cpp"
+#include "DataStructures/LinkedList.cpp"
 #include <iostream>
-
+#include <utility>
 
 using namespace std;
 
@@ -34,7 +34,7 @@ void MPointer<T>::setID(int idn) {
 }
 
 template<class T>
-int MPointer<T>::getID() {
+int MPointer<T>::getID() const {
 //    cout << "ID get: " << id << endl;
     return id;
 }
@@ -49,6 +49,17 @@ int MPointer<T>::get_dato() { //Metodo agregado por Gabriel
     return Dato;
 }
 
+template <class T>
+T * MPointer<T>::getData() const {
+    return data;
+}
+
+template <class T>
+void MPointer<T>::setData(T *data) {
+    this->data = data;
+    *this->data = *data;
+
+}
 
 template<class T>
 T &(MPointer<T>::operator *()){
@@ -61,14 +72,18 @@ T MPointer<T>::operator &() {
 }
 
 template<class T>
-void MPointer<T>::operator =(MPointer<T> pointer) {
-    data = pointer.data;
-    id = pointer.getID();
+MPointer<T> &MPointer<T>::operator =(const MPointer<T> &pointer) {
+    this->id = pointer.getID();
+
+    *data = *pointer.data;
+
+    return *this;
 }
 
 template<class T>
-void MPointer<T>::operator =(T pointer) {
-    data = &pointer;
+MPointer<T> & MPointer<T>::operator =(T pointer) {
+    *data = pointer;
+    return *this;
 }
 
 template<class T>
@@ -90,6 +105,11 @@ void MPointerGC::addPointer(MPointer<int> *pointer) {
     IDs++;
 
     pointerList->add(pointer);
+}
+
+void MPointerGC::garbageCollector() {
+
+
 }
 
 void MPointerGC::removePointer(int id) {

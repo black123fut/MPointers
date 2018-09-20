@@ -12,6 +12,7 @@ class MPointerGC {
 public:
 
     void addPointer(MPointer<int> *);
+    void garbageCollector();
     void removePointer(int id);
     static MPointerGC *Singleton();
 private:

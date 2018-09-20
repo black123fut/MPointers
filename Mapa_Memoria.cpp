@@ -6,7 +6,7 @@
 #include "MPointer.h"
 #include "MPointerGC.h"
 #include "Mapa_Memoria.h"
-#include "LinkedList.cpp"
+#include "DataStructures/LinkedList.cpp"
 
 using namespace std;
 
