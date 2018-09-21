@@ -5,12 +5,63 @@
 
 #include <iostream>
 #include "Mapa_Memoria.cpp"
+#include "Server/Server.h"
+#include "Server/Client.h"
 
 using namespace std;
 
 
 class DoubleLinkedList;
 int main() {
+    /**
+     * Servidor
+     */
+
+    Server *server = new Server;
+    server->run();
+
+    /**
+     * Cliente
+     */
+
+    Client *client = new Client;
+    client->connectClient();
+    char *buffer = new char[12];
+    buffer[0] = 'h';
+    buffer[1] = 'e';
+    buffer[2] = 'l';
+    buffer[3] = 'l';
+    buffer[4] = 'o';
+    buffer[5] = 'f';
+    buffer[6] = 'r';
+    buffer[7] = 'o';
+    buffer[8] = 'm';
+    buffer[9] = 'c';
+    buffer[10] = 'l';
+    buffer[11] = 'i';
+
+    client->sendMessage(buffer);
+    char *res = client->readMessage();
+    printf("%s\n", res);
+
+    buffer[0] = 'i';
+    buffer[1] = 's';
+    buffer[2] = 'a';
+    buffer[3] = 'a';
+    buffer[4] = 'c';
+
+    client ->sendMessage(buffer);
+
+    buffer[9] = 'h';
+    buffer[10] = 'o';
+    buffer[11] = 'u';
+
+    client->sendMessage(buffer);
+
+    /**
+     * El resto
+     */
+
 
     int contador_direcciones=0;
     int IDs=0;
@@ -101,15 +152,13 @@ int main() {
     cout << n.obtener_dato(1) << endl;
     cout<< n.buscar_Mpointer(1)<<endl;
 
-
-
-
-
     //cout << *pointer1<< endl;
     //cout << "ID: " << pointer1.getID() << endl;
     //cout << "ID: " << pointer2.getID() << endl;
 
 
-   // cout << &n.buscar(1) << endl;
+    // cout << &n.buscar(1) << endl;
+
+
     return 0;
 }
