@@ -114,7 +114,8 @@ int main() {
     //pointer1.set_dato(47);
     //cout<<pointer1.get_dato()<<endl;
 
-    Mapa_Memoria<int> n(1000);
+    Mapa_Memoria<int> n(500); //variación para memoria
+
 
     //Pruebas de la reservacion de memoria en el heap
 
