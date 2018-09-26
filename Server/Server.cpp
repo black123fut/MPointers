@@ -55,7 +55,7 @@ void Server::run() {
         valread = read(new_socket, buffer, 1024);
 
         if (valread == 0 || valread == -1) {
-            perror("Error server quitting");
+            perror("Se mamut :v");
             break;
         }
 
