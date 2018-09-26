@@ -2,10 +2,14 @@
 #include "MPointerGC.h"
 
 #include "DataStructures/LinkedList.cpp"
-#include <iostream>
-#include <utility>
 
-using namespace std;
+
+#include <iostream>
+#include <pthread.h>
+#include <utility>
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 
 /*
  *    MPOINTER
@@ -13,18 +17,39 @@ using namespace std;
 
 template<class T>
 MPointer<T>::MPointer() {
+    on = true;
     data = new int;
 }
 
 template<class T>
 MPointer<T>::~MPointer() {
-    pointerGC->removePointer(getID());
+    delete data;
+    pointerGC->setIDPointer(id, -1);
+    cout << "Eliminado" << endl;
 }
 
 template<class T>
 MPointer<T> MPointer<T>::New() {
     MPointer<T> *tmp = new MPointer<T>();
-    pointerGC->addPointer(tmp);
+
+    string message = "{\"opcode\":\"00\"}";
+
+    char* json = new char[message.length() + 1];
+    strcpy(json, message.c_str());
+    client->sendMessage(json);
+
+    char *answer = client->readMessage();
+    cout << "MPointer exitosos" << endl;
+    rapidjson::Document doc;
+    doc.Parse(answer);
+
+    int serverID1 = -1;
+    rapidjson::Value& opt = doc["opcode"];
+    if (strcmp(opt.GetString(), "01") == 0){
+        rapidjson::Value& val = doc["id"];
+        serverID1 = val.GetInt();
+    }
+    pointerGC->addPointer(tmp, serverID1);
     return *tmp;
 }
 
@@ -61,8 +86,23 @@ void MPointer<T>::setData(T *data) {
 
 }
 
+template <class T>
+bool MPointer<T>::isOn(){
+    return on;
+}
+
+template <class T>
+int MPointer<T>::getServerID() const {
+    return serverID;
+}
+
+template <class T>
+void MPointer<T>::setServerID(int newID) {
+    serverID = newID;
+}
+
 template<class T>
-T &(MPointer<T>::operator *()){
+T &(MPointer<T>::operator *()) {
     return *data;
 }
 
@@ -74,6 +114,7 @@ T MPointer<T>::operator &() {
 template<class T>
 MPointer<T> &MPointer<T>::operator =(const MPointer<T> &pointer) {
     this->id = pointer.getID();
+    this->serverID = pointer.getServerID();
 
     *data = *pointer.data;
 
@@ -83,11 +124,47 @@ MPointer<T> &MPointer<T>::operator =(const MPointer<T> &pointer) {
 template<class T>
 MPointer<T> & MPointer<T>::operator =(T pointer) {
     *data = pointer;
+
+    string message = "{\"opcode\":\"02\", \"data\":0, \"serverID\": 0}";
+    char *json = new char[message.length() + 1];
+    strcpy(json, message.c_str());
+
+    rapidjson::Document doc;
+    doc.Parse(json);
+
+    rapidjson::Value& val = doc["data"];
+    val.SetInt(pointer);
+
+    rapidjson::Value& val2 = doc["serverID"];
+    val2.SetInt(serverID);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+
+    string foo = buffer.GetString();
+    char *json2 = new char[foo.length() + 1];
+    strcpy(json2, foo.c_str());
+
+    client->sendMessage(json2);
+
+    char* answer = client->readMessage();
+    rapidjson::Document response;
+    response.Parse(answer);
+
+    rapidjson::Value& opcode = response["opcode"];
+    if (strcmp(opcode.GetString(), "03") == 0)
+        cout << "Guardado con exito en el servidor" << endl;
+
+
     return *this;
 }
 
 template<class T>
 MPointerGC *MPointer<T>::pointerGC = MPointerGC::Singleton();
+
+template <class T>
+Client *MPointer<T>::client = Client::getClient();
 
 template class MPointer<int>;
 
@@ -96,20 +173,48 @@ template class MPointer<int>;
  */
 
 MPointerGC *MPointerGC::pointerGC = nullptr;
+LinkedList< MPointer<int> * > *MPointerGC::pointerList = nullptr;
 
+MPointerGC::MPointerGC() {
+}
 
-void MPointerGC::addPointer(MPointer<int> *pointer) {
-    if (pointerList == nullptr)
+void MPointerGC::addPointer(MPointer<int> *pointer, int serverID) {
+    if (pointerList == nullptr){
         pointerList = new LinkedList< MPointer<int> * >;
+    }
     pointer->setID(IDs);
+    pointer->setServerID(serverID);
     IDs++;
 
     pointerList->add(pointer);
+
+    if (IDs == 1){
+        pthread_t t1;
+        pthread_create(&t1, NULL, &MPointerGC::garbageCollector, this);
+    }
+
 }
 
-void MPointerGC::garbageCollector() {
+void MPointerGC::setIDPointer(int id, int elex) {
+    for (int i = 0; i < pointerList->length(); ++i) {
+        if (pointerList->get(i)->getID() == id){
+            pointerList->get(i)->setID(elex);
+        }
+    }
+}
 
-
+void* MPointerGC::garbageCollector(void *ptr) {
+    while (true){
+        if (pointerList->length() > 0){
+            for (int i = 0; i < pointerList->length(); ++i) {
+                if (pointerList->get(i)->getID() == -1){
+                    cout << "Garbage Collector" << endl;
+                    pointerList->remove(i);
+                }
+            }
+        }
+        sleep(0.1);
+    }
 }
 
 void MPointerGC::removePointer(int id) {

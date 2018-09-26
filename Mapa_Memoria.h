@@ -22,7 +22,7 @@ private:
 
 public:
     Mapa_Memoria(int size_heap); //Constructor
-    int reservar_memoria(int ID,int contador_direcciones,int A);/*metodo para reservar memoria en heap para un MPointer,devuelve el tamano
+    int reservar_memoria(int ID,int contador_direcciones);/*metodo para reservar memoria en heap para un MPointer,devuelve el tamano
                                                                 del MPointer que acaba de almacenar en el heap para llevar el control de la
                                                                 proxima direccion de memoria en la cual se almacenara el otro MPointer*/
 

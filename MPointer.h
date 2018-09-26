@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "MPointerGC.h"
+#include "Server/Client.h"
 
 using namespace std;
 
@@ -12,15 +13,18 @@ class MPointer{
 public:
     MPointer();
     MPointer<T> static New();
-    void setID(int);
 
     //Metodos agregados por Gabriel (set_dato y get_dato)
-    void set_dato(T dato);
+    void set_dato(T);
     int get_dato();
-    //
+
     int getID() const;
+    void setID(int);
     T * getData() const;
     void setData(T *);
+    int getServerID() const;
+    void setServerID(int);
+    bool isOn();
 
     T &(operator *());
     T operator &();
@@ -31,8 +35,11 @@ public:
 private:
     T *data;
     MPointerGC static *pointerGC;
+    Client static *client;
+    int serverID;
     int id;
     int Dato;//Este atributo fue agregado por Gabriel
+    bool on;
 };
 
 

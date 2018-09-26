@@ -1,7 +1,3 @@
-//
-// Created by enrique on 11/09/18.
-//
-
 #include <iostream>
 #include "MPointer.h"
 #include "MPointerGC.h"
@@ -20,12 +16,10 @@ Mapa_Memoria<T>::Mapa_Memoria(int size_heap) {
         heap = (MPointer<int>*) malloc(size_heap);
         cout<<"heap:"<<endl;
         cout<<heap<<endl;
-    }
+}
 
 template <typename T>
-int Mapa_Memoria<T>::reservar_memoria(int IDs, int contador_direcciones,int A) {
-
-
+int Mapa_Memoria<T>::reservar_memoria(int IDs, int contador_direcciones) {
     MPointer<int> *x= new MPointer<int>();
     x=heap+contador_direcciones;
     x->setID(IDs);
@@ -39,7 +33,6 @@ void Mapa_Memoria<T>::asignar_dato(int ID, int dato) {
     for (int i=0;i<(lista_memoria->length());i++){
         if (lista_memoria->get(i)->getID()==ID){
             (lista_memoria->get(i))->set_dato(dato);
-
         }
     }
 }

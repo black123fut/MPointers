@@ -1,5 +1,6 @@
 #include "Client.h"
 
+#include <iostream>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
@@ -13,15 +14,33 @@
 
 Client::Client() {
     isConnected = false;
+    connectClient();
 }
+
+Client *Client::client = nullptr;
+
+Client *Client::getClient(){
+    if (client == nullptr){
+        client = new Client;
+    }
+    return client;
+}
+
 
 void Client::sendMessage(char *response) {
+    std::cout << "Pos envio" << std::endl;
     send(sock, response, strlen(response), 0);
+    std::cout << "envio" << std::endl;
+
 }
 
-char *Client::readMessage() {
+char *(Client::readMessage()) {
     char *buffer = new char[1024];
+    std::cout << "Pos recibir" << std::endl;
+
     valread = read(sock, buffer, 1024);
+    std::cout << buffer << std::endl;
+
     return buffer;
 }
 
@@ -36,6 +55,9 @@ int Client::connectClient() {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
 
+    /**
+     * La ip es la del servidor.
+     */
     if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
         isConnected = false;

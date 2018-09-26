@@ -15,11 +15,13 @@
 class Client {
 public:
     Client();
+    static Client *getClient();
     int connectClient();
     void sendMessage(char *);
     char *readMessage();
 
 private:
+    static Client *client;
     struct sockaddr_in address;
     bool isConnected;
     int sock = 0, valread;
