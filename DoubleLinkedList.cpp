@@ -4,50 +4,51 @@
 using namespace std;
 
 
-template <class T>
 class DoubleNode{
 public:
-
-    DoubleNode(MPointer<int> data){
+    DoubleNode(const MPointer<int> &data){
         this->data = data;
         next = nullptr;
         prev = nullptr;
     }
 
     DoubleNode(){
-        data = NULL;
         next = nullptr;
         prev = nullptr;
     }
 
-    MPointer<int> &getData() {
+    const MPointer<int> getData() const {
         return data;
     }
 
-    void setData(MPointer<int> data) {
+    MPointer<int> getData(){
+        return data;
+    }
+
+    void setData(const MPointer<int> &data) {
         this->data = data;
     }
 
-    DoubleNode<T> *getPrev() {
+    DoubleNode *getPrev() {
         return prev;
     }
 
-    void setPrev(DoubleNode<T> *prev) {
+    void setPrev(DoubleNode *prev) {
         this->prev = prev;
     }
 
-    void setNext(DoubleNode<T> *next){
+    void setNext(DoubleNode *next){
         this->next = next;
     }
 
-    DoubleNode<T> *getNext() {
+    DoubleNode *getNext() {
         return next;
     }
 
 private:
     MPointer<int> data;
-    DoubleNode<T> *prev;
-    DoubleNode<T> *next;
+    DoubleNode *prev;
+    DoubleNode *next;
 };
 
 class DoubleLinkedList{
@@ -57,16 +58,16 @@ public:
         size = 0;
     }
 
-    void add(MPointer<int> data){
+    void add(const MPointer<int> &data){
         if (head == nullptr){
-            head = new DoubleNode< MPointer<int> >(data);
+            head = new DoubleNode(data);
         } else {
-            DoubleNode< MPointer<int> > *tmp = head;
+            DoubleNode *tmp = head;
 
             while (tmp->getNext() != nullptr){
                 tmp = tmp->getNext();
             }
-            DoubleNode< MPointer<int> > *newNode = new DoubleNode< MPointer<int> >(data);
+            DoubleNode *newNode = new DoubleNode(data);
             tmp->setNext(newNode);
             newNode->setPrev(tmp);
         }
@@ -75,14 +76,14 @@ public:
 
     void remove(int i){
         if (i == 0){
-            DoubleNode< MPointer<int> > *tmp = head;
+            DoubleNode *tmp = head;
             head = head->getNext();
             head->setPrev(nullptr);
             free(tmp);
             size--;
         }
         else {
-            DoubleNode< MPointer<int> > *tmp = head;
+            DoubleNode *tmp = head;
             int cont = 1;
             while (tmp->getNext() != nullptr){
                 if (i == cont){
@@ -99,14 +100,14 @@ public:
         }
     }
 
-    MPointer<int> get(int i){
+    DoubleNode * get(int i) const {
         if (i < size){
-            DoubleNode< MPointer<int> > *tmp = head;
+            DoubleNode *tmp = head;
 
             for (int j = 0; j < i; ++j) {
                 tmp = tmp->getNext();
             }
-            return tmp->getData();
+            return tmp;
         }
     }
 
@@ -115,6 +116,6 @@ public:
     }
 
 private:
-    DoubleNode< MPointer<int> > *head;
+    DoubleNode *head;
     int size;
 };

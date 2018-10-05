@@ -8,7 +8,6 @@ using namespace std;
 
 
 template <typename T>
-
 Mapa_Memoria<T>::Mapa_Memoria(int size_heap) {
         lista_memoria= new LinkedList<MPointer<int>*>;
         cout<<"Lista memoria:"<<endl;
@@ -54,9 +53,3 @@ MPointer<T>* Mapa_Memoria<T>::buscar_Mpointer(int ID) {
         }
     }
 }
-
-
-;
-
-
-

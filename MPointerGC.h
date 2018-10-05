@@ -14,7 +14,9 @@ public:
     void addPointer(MPointer<int> *, int);
     void setIDPointer(int, int);
     static void* garbageCollector(void *);
+    MPointer<int> getPointer(int);
     void removePointer(int id);
+    void setServerIDPointer(int);
     static MPointerGC *Singleton();
 private:
     static MPointerGC *pointerGC;

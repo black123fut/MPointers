@@ -18,18 +18,19 @@ public:
     void set_dato(T);
     int get_dato();
 
+    MPointer<T> *getPointer();
     int getID() const;
     void setID(int);
     T * getData() const;
     void setData(T *);
     int getServerID() const;
     void setServerID(int);
-    bool isOn();
+    void deleteData();
 
     T &(operator *());
-    T operator &();
+    T &operator &();
     MPointer<T> & operator =(const MPointer<T> &);
-    MPointer<T> & operator =(T);
+    MPointer<T> & operator =(const T &);
     ~MPointer();
 
 private:

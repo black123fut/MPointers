@@ -15,17 +15,53 @@
  *    MPOINTER
  */
 
+/**
+ * Constructor.
+ * @tparam T
+ */
 template<class T>
 MPointer<T>::MPointer() {
-    on = true;
     data = new int;
 }
 
 template<class T>
 MPointer<T>::~MPointer() {
-    delete data;
+//    delete data;
+    string message = "{\"opcode\":\"04\", \"serverID\": 0}";
+
+    char* json = new char[message.length() + 1];
+    strcpy(json, message.c_str());
+
+    rapidjson::Document doc;
+    doc.Parse(json);
+
+    rapidjson::Value& val2 = doc["serverID"];
+    val2.SetInt(serverID);
+
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    doc.Accept(writer);
+
+    string foo = buffer.GetString();
+    char *json2 = new char[foo.length() + 1];
+    strcpy(json2, foo.c_str());
+
+    client->sendMessage(json2);
+
+    char* answer = client->readMessage();
+
+    rapidjson::Document response;
+    response.Parse(answer);
+
+    rapidjson::Value& opcode = response["opcode"];
+    rapidjson::Value& msg = response["message"];
+    if (msg.GetInt() == 0)
+        cout << "Eliminado con exito en el servidor" << endl;
+    else
+        cout << "";
+
     pointerGC->setIDPointer(id, -1);
-    cout << "Eliminado" << endl;
+//    cout << "Eliminado" << endl;
 }
 
 template<class T>
@@ -51,6 +87,11 @@ MPointer<T> MPointer<T>::New() {
     }
     pointerGC->addPointer(tmp, serverID1);
     return *tmp;
+}
+
+template<class T>
+void MPointer<T>::deleteData() {
+    delete data;
 }
 
 template<class T>
@@ -87,11 +128,6 @@ void MPointer<T>::setData(T *data) {
 }
 
 template <class T>
-bool MPointer<T>::isOn(){
-    return on;
-}
-
-template <class T>
 int MPointer<T>::getServerID() const {
     return serverID;
 }
@@ -107,7 +143,7 @@ T &(MPointer<T>::operator *()) {
 }
 
 template<class T>
-T MPointer<T>::operator &() {
+T &MPointer<T>::operator &() {
     return *data;
 }
 
@@ -122,7 +158,7 @@ MPointer<T> &MPointer<T>::operator =(const MPointer<T> &pointer) {
 }
 
 template<class T>
-MPointer<T> & MPointer<T>::operator =(T pointer) {
+MPointer<T> & MPointer<T>::operator =(const T &pointer) {
     *data = pointer;
 
     string message = "{\"opcode\":\"02\", \"data\":0, \"serverID\": 0}";
@@ -155,8 +191,6 @@ MPointer<T> & MPointer<T>::operator =(T pointer) {
     rapidjson::Value& opcode = response["opcode"];
     if (strcmp(opcode.GetString(), "03") == 0)
         cout << "Guardado con exito en el servidor" << endl;
-
-
     return *this;
 }
 
@@ -192,7 +226,14 @@ void MPointerGC::addPointer(MPointer<int> *pointer, int serverID) {
         pthread_t t1;
         pthread_create(&t1, NULL, &MPointerGC::garbageCollector, this);
     }
+}
 
+MPointer<int> MPointerGC::getPointer(int id) {
+    for (int i = 0; i < pointerList->length(); ++i) {
+        if (pointerList->get(i)->getID() == id){
+            return *pointerList->get(i);
+        }
+    }
 }
 
 void MPointerGC::setIDPointer(int id, int elex) {
@@ -203,12 +244,22 @@ void MPointerGC::setIDPointer(int id, int elex) {
     }
 }
 
+
+void MPointerGC::setServerIDPointer(int serverId) {
+    for (int i = 0; i < pointerList->length(); ++i) {
+        if (pointerList->get(i)->getServerID() == serverId){
+            pointerList->get(i)->setServerID(-1);
+        }
+    }
+}
+
 void* MPointerGC::garbageCollector(void *ptr) {
     while (true){
         if (pointerList->length() > 0){
             for (int i = 0; i < pointerList->length(); ++i) {
                 if (pointerList->get(i)->getID() == -1){
                     cout << "Garbage Collector" << endl;
+                    pointerList->get(i)->deleteData();
                     pointerList->remove(i);
                 }
             }

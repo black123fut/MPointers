@@ -28,19 +28,13 @@ Client *Client::getClient(){
 
 
 void Client::sendMessage(char *response) {
-    std::cout << "Pos envio" << std::endl;
     send(sock, response, strlen(response), 0);
-    std::cout << "envio" << std::endl;
-
 }
 
 char *(Client::readMessage()) {
     char *buffer = new char[1024];
-    std::cout << "Pos recibir" << std::endl;
 
     valread = read(sock, buffer, 1024);
-    std::cout << buffer << std::endl;
-
     return buffer;
 }
 
@@ -59,7 +53,7 @@ int Client::connectClient() {
      * La ip es la del servidor.
      */
     if (inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr) <= 0) {
-        printf("\nInvalid address/ Address not supported \n");
+        printf("\n Invalid address/ Address not supported \n");
         isConnected = false;
         return -1;
     }
