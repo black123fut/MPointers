@@ -24,9 +24,14 @@ MPointer<T>::MPointer() {
     data = new int;
 }
 
+/**
+ * Destructor.
+ * @tparam T
+ */
 template<class T>
 MPointer<T>::~MPointer() {
-//    delete data;
+//    delete data
+    //Crea mensaje para eliminar MPointer del servidor.
     string message = "{\"opcode\":\"04\", \"serverID\": 0}";
 
     char* json = new char[message.length() + 1];
@@ -46,8 +51,10 @@ MPointer<T>::~MPointer() {
     char *json2 = new char[foo.length() + 1];
     strcpy(json2, foo.c_str());
 
+    //Envia el mensaje.
     client->sendMessage(json2);
 
+    //Lee la respuesta del servidor.
     char* answer = client->readMessage();
 
     rapidjson::Document response;
@@ -64,17 +71,27 @@ MPointer<T>::~MPointer() {
 //    cout << "Eliminado" << endl;
 }
 
+/**
+ * Crea un nuevo MPointer.
+ * @tparam T
+ * @return Un MPointer.
+ */
 template<class T>
 MPointer<T> MPointer<T>::New() {
     MPointer<T> *tmp = new MPointer<T>();
 
+    //Escribe un mensaje.
     string message = "{\"opcode\":\"00\"}";
 
     char* json = new char[message.length() + 1];
     strcpy(json, message.c_str());
+
+    //Envia un mensaje al servidor.
     client->sendMessage(json);
 
+    //Lee el mensaje del servidor.
     char *answer = client->readMessage();
+    
     cout << "MPointer exitosos" << endl;
     rapidjson::Document doc;
     doc.Parse(answer);
@@ -85,14 +102,20 @@ MPointer<T> MPointer<T>::New() {
         rapidjson::Value& val = doc["id"];
         serverID1 = val.GetInt();
     }
+    //Agrega el MPointer a la lista.
     pointerGC->addPointer(tmp, serverID1);
     return *tmp;
 }
 
+/**
+ * Elimina el dato.
+ * @tparam T
+ */
 template<class T>
 void MPointer<T>::deleteData() {
     delete data;
 }
+
 
 template<class T>
 void MPointer<T>::setID(int idn) {
@@ -147,6 +170,12 @@ T &MPointer<T>::operator &() {
     return *data;
 }
 
+/**
+ * Sobreescribe el operador =.
+ * @tparam T
+ * @param pointer MPointer al cual se iguala.
+ * @return Un MPointer.
+ */
 template<class T>
 MPointer<T> &MPointer<T>::operator =(const MPointer<T> &pointer) {
     this->id = pointer.getID();
@@ -157,10 +186,17 @@ MPointer<T> &MPointer<T>::operator =(const MPointer<T> &pointer) {
     return *this;
 }
 
+/**
+ * Sobreescribe el operador =.
+ * @tparam T
+ * @param pointer Valor al cual se iguala.
+ * @return Un MPointer.
+ */
 template<class T>
 MPointer<T> & MPointer<T>::operator =(const T &pointer) {
     *data = pointer;
 
+    //Escribre el mensaje.
     string message = "{\"opcode\":\"02\", \"data\":0, \"serverID\": 0}";
     char *json = new char[message.length() + 1];
     strcpy(json, message.c_str());
@@ -182,8 +218,10 @@ MPointer<T> & MPointer<T>::operator =(const T &pointer) {
     char *json2 = new char[foo.length() + 1];
     strcpy(json2, foo.c_str());
 
+    //Envia el mensaje al servidor.
     client->sendMessage(json2);
 
+    //Lee la respuesta del servidor.
     char* answer = client->readMessage();
     rapidjson::Document response;
     response.Parse(answer);
@@ -208,10 +246,17 @@ template class MPointer<int>;
 
 MPointerGC *MPointerGC::pointerGC = nullptr;
 LinkedList< MPointer<int> * > *MPointerGC::pointerList = nullptr;
-
+/**
+ * Constructor.
+ */
 MPointerGC::MPointerGC() {
 }
 
+/**
+ * Agrega MPointer a la lista.
+ * @param pointer MPointer que se agrega a la lista.
+ * @param serverID ID del servidor.
+ */
 void MPointerGC::addPointer(MPointer<int> *pointer, int serverID) {
     if (pointerList == nullptr){
         pointerList = new LinkedList< MPointer<int> * >;
@@ -222,12 +267,18 @@ void MPointerGC::addPointer(MPointer<int> *pointer, int serverID) {
 
     pointerList->add(pointer);
 
+    //Inicia el thread.
     if (IDs == 1){
         pthread_t t1;
         pthread_create(&t1, NULL, &MPointerGC::garbageCollector, this);
     }
 }
 
+/**
+ * Obtiene un MPointer de la lista.
+ * @param id ID del MPointer.
+ * @return Un MPointer.
+ */
 MPointer<int> MPointerGC::getPointer(int id) {
     for (int i = 0; i < pointerList->length(); ++i) {
         if (pointerList->get(i)->getID() == id){
@@ -236,6 +287,11 @@ MPointer<int> MPointerGC::getPointer(int id) {
     }
 }
 
+/**
+ * Modifica el valor de la ID de un MPointer en la lista.
+ * @param id ID del MPointer en la lista.
+ * @param elex Nuevo ID del MPointer.
+ */
 void MPointerGC::setIDPointer(int id, int elex) {
     for (int i = 0; i < pointerList->length(); ++i) {
         if (pointerList->get(i)->getID() == id){
@@ -253,6 +309,11 @@ void MPointerGC::setServerIDPointer(int serverId) {
     }
 }
 
+/**
+ * Loop que busca eliminar de la lista los MPointer que ya fueron eliminados.
+ * @param ptr MPointerGC.
+ * @return None.
+ */
 void* MPointerGC::garbageCollector(void *ptr) {
     while (true){
         if (pointerList->length() > 0){
@@ -268,6 +329,10 @@ void* MPointerGC::garbageCollector(void *ptr) {
     }
 }
 
+/**
+ * Remueve MPointer de la lista.
+ * @param id ID del puntero a eliminar.
+ */
 void MPointerGC::removePointer(int id) {
     for (int i = 0; i < pointerList->length(); ++i) {
         if (pointerList->get(i)->getID() == id){
@@ -276,6 +341,10 @@ void MPointerGC::removePointer(int id) {
     }
 }
 
+/**
+ * Obtiene el MPointerGC.
+ * @return El MPointerGC.
+ */
 MPointerGC *MPointerGC::Singleton() {
     if (pointerGC == nullptr){
         pointerGC = new MPointerGC;

@@ -12,6 +12,9 @@
 #include <arpa/inet.h>
 #define PORT 8080
 
+/**
+ * Constructor.
+ */
 Client::Client() {
     isConnected = false;
     connectClient();
@@ -19,6 +22,10 @@ Client::Client() {
 
 Client *Client::client = nullptr;
 
+/**
+ * Obtiene el cliente.
+ * @return El cliente.
+ */
 Client *Client::getClient(){
     if (client == nullptr){
         client = new Client;
@@ -26,11 +33,18 @@ Client *Client::getClient(){
     return client;
 }
 
-
+/**
+ * Envia un mensaje al servidor.
+ * @param response Texto por enviar.
+ */
 void Client::sendMessage(char *response) {
     send(sock, response, strlen(response), 0);
 }
 
+/**
+ * Lee el mensaje del servirdor.
+ * @return El texto que envia el servidor.
+ */
 char *(Client::readMessage()) {
     char *buffer = new char[1024];
 
@@ -38,6 +52,10 @@ char *(Client::readMessage()) {
     return buffer;
 }
 
+/**
+ * Conecta el cliente al servidor.
+ * @return un entero.
+ */
 int Client::connectClient() {
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Socket creation error \n");

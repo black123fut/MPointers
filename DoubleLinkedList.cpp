@@ -53,11 +53,18 @@ private:
 
 class DoubleLinkedList{
 public:
+    /**
+     * Constructor.
+     */
     DoubleLinkedList(){
         head = nullptr;
         size = 0;
     }
 
+    /**
+     * Agrega MPointer a la lista.
+     * @param data MPointer para agregar.
+     */
     void add(const MPointer<int> &data){
         if (head == nullptr){
             head = new DoubleNode(data);
